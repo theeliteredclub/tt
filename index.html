@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #d32f2f;
+      --secondary-color: #ffffff;
+      --background-color: #f5f5f5;
+      --text-color: #000000;
+      --card-bg: #e3f2fd;
+      --blink-dot: rgb(18, 179, 18);
+    }
+    [data-theme="dark"] {
+      --primary-color: #1e88e5;
+      --secondary-color: #212121;
+      --background-color: #121212;
+      --text-color: #ffffff;
+      --card-bg: #1c1c1c;
+      --blink-dot: #00ff00;
+    }
+    body {
+      margin: 0;
+      font-family: "Arial", sans-serif;
+      background: var(--background-color);
+      color: var(--text-color);
+      overflow-x: hidden;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background: var(--primary-color);
+      color: var(--text-color);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .logo {
+      max-height: 50px;
+      margin: 0 auto;
+      display: block;
+    }
+    .topbar i {
+      font-size: 24px;
+      cursor: pointer;
+    }
+    .theme-switch {
+      font-size: 24px;
+      cursor: pointer;
+    }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -250px;
+      height: 100%;
+      width: 250px;
+      background: var(--secondary-color);
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+      transition: left 0.3s ease;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      padding-top: 20px;
+    }
+    .sidebar.active {
+      left: 0;
+    }
+    .sidebar a {
+      text-decoration: none;
+      color: var(--text-color);
+      margin: 15px 20px;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      transition: color 0.3s;
+    }
+    .sidebar a:hover {
+      color: var(--primary-color);
+    }
+    .sidebar a i {
+      margin-right: 10px;
+    }
+    .content {
+      margin-left: 20px;
+      padding: 20px;
+    }
+    .content h1 {
+      margin: 0;
+    }
+    .card {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    .card .card-icon {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 24px;
+      color: var(--primary-color);
+    }
+    .card .blink-dot {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 10px;
+      height: 10px;
+      background-color: var(--blink-dot);
+      border-radius: 50%;
+      animation: blink 1s infinite;
+    }
+    @keyframes blink {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0;
+      }
+    }
+    .customer-support {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--primary-color);
+      color: var(--text-color);
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    .customer-support:hover {
+      transform: scale(1.1);
+    }
+    @media (max-width: 768px) {
+      .content {
+        margin: 0;
+        padding: 10px;
+      }
+      .sidebar {
+        width: 200px;
+      }
+    }
+    .popup-form {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      text-align: center;
+    }
+    .popup-form.active {
+      display: block;
+    }
+    .popup-form input,
+    .popup-form textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 5px;
+      background: var(--secondary-color);
+      color: var(--text-color);
+    }
+    .popup-form button {
+      background: var(--primary-color);
+      color: var(--text-color);
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .popup-form button:hover {
+      background: #ff5252;
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <i class="fas fa-bars" id="menu-toggle"></i>
+    <img src="https://iili.io/2gtz4PS.png" alt="Organization Logo" class="logo">
+    <i class="fas fa-adjust theme-switch" id="theme-switch"></i>
+  </div>
+
+  <div class="sidebar" id="sidebar">
+    <a href="#"><i class="fas fa-home"></i> Home</a>
+    <a href="#"><i class="fas fa-user"></i> Profile</a>
+    <a href="upcoming.html"><i class="fas fa-calendar-alt"></i> Events</a>
+    <a href="#"><i class="fas fa-cogs"></i> Settings</a>
+    <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  </div>
+
+  <div class="content">
+    <h1>Welcome, User!</h1>
+    <div class="card">
+      <i class="fas fa-calendar-alt card-icon"></i>
+      <div class="blink-dot"></div>
+      <h2>Upcoming Events</h2>
+      <p>Join exclusive events tailored for our members.</p>
+    </div>
+    <div class="card">
+      <i class="fas fa-rocket card-icon"></i>
+      <h2>Select a Plan</h2>
+      <p>Upgrade your membership for more perks.</p>
+    </div>
+  </div>
+
+  <div class="customer-support" id="customer-support">
+    <i class="fas fa-headset"></i>
+  </div>
+
+  <div class="popup-form" id="popup-form">
+    <h2>Customer Support</h2>
+    <form action="https://formsubmit.co/d9f61c17f613fa74cac19820481f9b21" method="post">
+      <input type="text"  name="name" placeholder="Name" required>
+      <input type="email" name="email" placeholder="Email" required>
+      <textarea name="message" placeholder="Your message" rows="5" required></textarea>
+      <input type="hidden" id="redirect-url" name="_redirect" value="">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="hidden" name="_template" value="table">
+      <div class="form-group">
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+
+
+  <script>
+    const menuToggle = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    const themeSwitch = document.getElementById('theme-switch');
+    const customerSupport = document.getElementById('customer-support');
+    const popupForm = document.getElementById('popup-form');
+
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('active');
+    });
+
+    themeSwitch.addEventListener('click', () => {
+      const currentTheme = document.body.dataset.theme;
+      document.body.dataset.theme = currentTheme === 'dark' ? '' : 'dark';
+    });
+
+    customerSupport.addEventListener('click', () => {
+      popupForm.classList.toggle('active');
+    });
+
+    document.getElementById("redirect-url").value = window.location.href;
+  </script>
+</body>
+</html>
